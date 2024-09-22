@@ -1,0 +1,16 @@
+{
+  "name": "alarm-clock",
+  "version": "1.0.0",
+  "description": "Alarm Clock with black background running in a progressive web app that toggles fullscreen mode.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0"
+  }
+}
