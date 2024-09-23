@@ -23,7 +23,7 @@ function createTicks() {
   }
 }
 
-setClockRadius();
+setClockFaceRadius();
 
 // Call this function when the page loads
 createTicks();
@@ -74,6 +74,32 @@ function setAlarm() {
 
   alarmTimeout = setTimeout(triggerAlarm, timeToAlarm);
   alert(`Alarm set for ${alarmDate.toLocaleTimeString()}`);
+}
+
+function snoozeAlarm() {
+  // Get the alarm input value (in HH:MM format)
+  const alarmInputField = document.getElementById('alarmTime');
+  const alarmInput = alarmInputField.value;
+
+  if (!alarmInput) {
+    alert('Please set a valid alarm time before snoozing!');
+    return;
+  }
+
+  // Get the current date and parse the alarm input time (HH:MM)
+  const now = new Date();
+  const [hours, minutes] = alarmInput.split(':').map(Number); // Split the HH:MM input into hours and minutes
+  const alarmDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+
+  // Add 10 minutes to the alarm time
+  alarmDate.setMinutes(alarmDate.getMinutes() + 10);
+
+  // Update the input field with the new time in HH:MM format
+  const newAlarmTime = alarmDate.toTimeString().slice(0, 5); // Extract HH:MM
+  alarmInputField.value = newAlarmTime;
+
+  // Call setAlarm() to set the new alarm
+  setAlarm();
 }
 
 function stopAlarm() {
@@ -132,6 +158,12 @@ document.addEventListener('keydown', function (event) {
     event.preventDefault();
     stopAlarm();
   }
+
+  if (event.key == 'Space' || event.key == ' ') {
+    event.preventDefault();
+    snoozeAlarm();
+  }
+  
 });
 
 // Element where double-tap is detected
@@ -155,18 +187,18 @@ function onDoubleTap() {
   stopAlarm();
 }
 
-function setClockRadius() {
-    const clock = document.querySelector('.clock');
-    radius = Math.min(clock.offsetHeight / 2, clock.offsetWidth / 2);
+function setClockFaceRadius() {
+  const clockFace = document.querySelector('.face');
+  radius = Math.min(clockFace.offsetHeight / 2, clockFace.offsetWidth / 2);
 }
 // Call this function when the page loads or when the window is resized
 window.onload = function() {
-    setClockRadius();
-    createTicks();
+  setClockFaceRadius();
+  createTicks();
 };
 
 window.onresize = function() {
-    setClockRadius();
+  setClockFaceRadius();
   document.getElementById('ticks').innerHTML = ''; // Clear existing ticks
   createTicks(); // Regenerate ticks on window resize
 };
