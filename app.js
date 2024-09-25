@@ -2,10 +2,12 @@ let alarmTime = null;
 let alarmTimeout = null;
 let radius = null;
 let audio = new Audio('/time-in-a-bottle.mp3');
-let lastKeyUp = 0; // time of last keyUp
+let lastKeyUp = new Date(); // date and time of last keyUp
+const keyUpThreshold = 1000; // one thousand milliseconds
 let lastKeyTyped = null; // code of the last keyUp event
 let keyUpsDetected = 0; // count number of keyups detected to determine if double or tripple tap occured.
-let lastTap = 0; // time of last tap
+const tapThreshold = 300; // 300 milliseconds
+let lastTap = 0; // time of last tap // TODO: refactor this to be a Date and use it in the handleTap function.
 let tapsDetected = 0; // count number of taps detected to determine if double or tripple tap occured.
 
 function createTicks() {
@@ -57,6 +59,7 @@ setInterval(updateClock, 1000);
 
 // Alarm Functionality
 function setAlarm() {
+  // TODO: Make a dialog for this.
   let alarmTimeString = prompt("Enter alarm time (HH:MM):");
 
   //const alarmInput = document.getElementById('alarmTime').value;
@@ -169,28 +172,22 @@ function displayHelp() {
   alert(message);
 }
 
-function wrapUpKeyUpEvent(clearKeyUpsDetected = false, keyTyped = null) {
-  if (clearKeyUpsDetected) {
-    keyUpsDetected = 0;
-  } else {
-    keyUpsDetected += 1;
-  }
-  lastKeyTyped = keyTyped;
-}
-
-function wrapUpTapEvent(clearTapsDetected = false) {
-  if (clearTapsDetected) {
+function wrapUpTapEvent(clearTapsDetected) {
+  if (clearTapsDetected === true) {
     tapsDetected = 0;
   } else {
     tapsDetected += 1;
   }
 }
+function handleKeyUp(event) {
+  const currentTime = new Date();
+  
+  if (lastKeyUp === 0) {
+    lastKeyUp = new Date();
+  }
 
-// Add an event listener to detect key press 'F'
-document.addEventListener('keyup', function (event) {
-  const currentTime = new Date().getTime();
-  const keyUpLength = currentTime - lastKeyUp;
-
+  const keyUpLength =  Math.abs(currentTime.getMilliseconds() - lastKeyUp.getMilliseconds());
+  
   try {
     if (keyUpsDetected < 0) {
       throw new Error("keyUpsDetected should not be less than zero.");
@@ -201,56 +198,62 @@ document.addEventListener('keyup', function (event) {
     return;
   } // try-catch block
   
-  if (keyUpLength < 300 && keyUpLength > 0) {
-    lastKeyUp = currentTime; // reset timer for next keypress.
-
+  if (keyUpLength < keyUpThreshold && keyUpLength > 0) {
     // process single keypress
     // user requests fullscreen toggle
-    if (event.key === 'f' || event.key === 'F') {
+    if (event.key.toLowerCase() === 'f') {
       event.preventDefault();
       toggleFullScreen();
-      wrapUpKeyUpEvent(true); // clearKeyUpsDetected = true, keyTyped defaults to null
+      keyUpsDetected = 0;
+      lastKeyTyped = null;
+      lastKeyUp = new Date();
       return;
-    }
+    } // if key = 'f'
 
-    // 'f'/'F' key not pressed, so continue processing first keyUp event.
-    if (keyUpsDetected === 0) {
-      // store info for text keyUp
-      event.preventDefault();
-      wrapUpKeyUpEvent(false, event.key);
-      return;
-    }
-
-    if (keyUpsDetected === 1) {
-      if (event.key === lastKeyTyped) {
-        // TODO: process double keyUp
-        // user requests alarm set
-        if (event.key === 'a' || event.key === 'A') {
+    if (event.key === lastKeyTyped) {
+        // process double keyUp
+        switch (event.key) {
+        case 'a':
+        case 'A':
+          // user requests alarm set
           event.preventDefault();
-          wrapUpKeyUpEvent(true); // keyTyped defaults to null.
-          alert('Setting alarm is not yet implemented.')
-          return;
-        }
-
+          //alert('Setting alarm is not yet implemented.')
+          setAlarm();
+          break;
         // user requests to stop the alarm.
-        if (event.key === 'Space' || event.key === 's' || event.key === 'S') {
+        case ' ':
+        case 's':
+        case 'S':
           event.preventDefault();
           stopAlarm();
-          wrapUpKeyUpEvent(true); // keyTyped defaults to null.
-          return;
-        }
+          break;
+        // user requests to snooze the alarm.
+        case 'n':
+        case 'N':
+          event.preventDefault();
+          snoozeAlarm();
+          break;
 
         // user requests help dialog.
-        if (event.key === 'Escape') {
+        case 'Escape':
           event.preventDefault();
           displayHelp();
-          wrapUpKeyUpEvent(true); // keyTyped defaults to null.
-          return;
-        }
-    } // if (event.key === lastKeyTyped)
-    } // if keyUpsDetected === 0)
-  } // if (0 < keyUpLength < 300)
-}); // EventListener(keyUp)
+          break;
+        default:
+          break;
+      }
+      lastKeyTyped = null;
+      keyUpsDetected = 0;
+      lastKeyUp = new Date();
+      return;
+    } // if keyTyped = lastKeyTyped
+
+    keyUpsDetected += 1;
+    lastKeyTyped = event.key;
+    lastKeyUp = new Date();
+    return;
+  } // if keyUpLength < keyUpThreshood
+} // handleKeyUp
 
 // Element where double-tap is detected
 const clock = document.querySelector('.clock');
@@ -265,11 +268,11 @@ function onTripleTap() {
   displayHelp()
 }
 
+function handleTap (event) {
 // Event listener for touchstart to detect double-tap
-clock.addEventListener('touchstart', function(event) {
+  // TODO: refactor currentTime and lastTap to be just Dates and not new Date().getTime();
   const currentTime = new Date().getTime();
   const tapLength = currentTime - lastTap;
-  lastTap = currentTime;
 
   try {
     if (tapsDetected < 0) {
@@ -281,24 +284,26 @@ clock.addEventListener('touchstart', function(event) {
     return;
   } // try-catch block
 
-  if (tapLength < 300 && tapLength > 0) {
+  if (tapLength < tapThreshold && tapLength > 0) {
     if (tapsDetected === 0) {
       wrapUpTapEvent(false);
-      return;
     }
 
     // Double-tap detected
     if (tapsDetected === 1) {
       onDoubleTap();
       wrapUpTapEvent(true);
-      return;
+    }
+  
+    if (tapsDetected === 2) {
+      onTripleTap();
+      wrapUpTapEvent(true);
     }
 
-    onTripleTap();
-    wrapUpTapEvent(true);
+    lastTap = currentTime; // TODO: shouldn't I get the new current time?
     return;
-  } // if (0 < tapLength < 300)
-}); // EventListener(touchStart)
+  } // if (0 < tapLength < tapThreshold)
+}; // handleTap
 
 function setClockFaceRadius() {
   const clockFace = document.querySelector('.face');
@@ -306,9 +311,21 @@ function setClockFaceRadius() {
 }
 // Call this function when the page loads or when the window is resized
 window.onload = function() {
+  const clock = document.querySelector('.clock');
+
   setClockFaceRadius();
   createTicks();
-};
+  document.addEventListener('keyup', function (event) {
+    handleKeyUp(event);
+  });
+
+  clock.addEventListener('touchstart', function (event) {
+    handleTap(event);
+  });
+
+  displayHelp();
+
+}; // window.onLoad
 
 window.onresize = function() {
   setClockFaceRadius();

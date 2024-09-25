@@ -9,10 +9,10 @@ body {
 }
 
 .clock {
-    width: 100vw;
-    height: 100vh;
-    max-width: 100vh;
-    max-height: 100vh;
+    width: 95vw;
+    height: 95vh;
+    max-width: 95vh;
+    max-height: 95vh;
     border-radius: 50%;
     margin: auto;
     position: relative;
@@ -92,4 +92,14 @@ body {
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
+}
+
+#controls {
+    height: 5vh; /* 5% of the viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    color: white;
+    padding: 0px;
 }
