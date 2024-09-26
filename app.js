@@ -124,13 +124,14 @@ function stopAlarm() {
 function triggerAlarm() {
   audio.loop = true;
   audio.play();
+  sendNotification();
   // Reset the alarm
   alarmTimeout = null;
 }
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
-  .then(() => console.log('Service Worker Registered'));
+  .then((registration) => console.log('Service worker registered with scope:', registration.scope));
 }
 
 // Function to toggle fullscreen mode
@@ -256,7 +257,7 @@ function handleKeyUp(event) {
 } // handleKeyUp
 
 // Element where double-tap is detected
-const clock = document.querySelector('.clock');
+//const clock = document.querySelector('.clock');
 
 // Action to take on double-tap
 function onDoubleTap() {
@@ -309,10 +310,31 @@ function setClockFaceRadius() {
   const clockFace = document.querySelector('.face');
   radius = Math.min(clockFace.offsetHeight / 2, clockFace.offsetWidth / 2);
 }
+
+function sendNotification() {
+  if (Notification.permission === 'granted') {
+    new Notification('Alarm', {
+      body: 'Your alarm is ringing!',
+      icon: '/icon.png',
+      badge: '/icon.png' // TODO: Maybe change this badge to blue circle with a white number in it.
+    });
+  }
+}
+
 // Call this function when the page loads or when the window is resized
 window.onload = function() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        console.log("Notification permission granted.");
+      } else {
+        console.log("Notification permission was denied.");
+      } // if-else
+    }); // requestPermission.then(permission)
+  } // if 'Notification' in window
+  
   const clock = document.querySelector('.clock');
-
+  
   setClockFaceRadius();
   createTicks();
   document.addEventListener('keyup', function (event) {
