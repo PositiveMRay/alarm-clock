@@ -34,7 +34,6 @@ body {
     transform-origin: 0% 50%; /* Rotate from the left side */
     transform: rotate(90deg);
     transition: all 0.05s;
-    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.7);
 }
 
 /* Hour hand: shorter */
@@ -46,16 +45,15 @@ body {
 
 /* Minute hand: longer than hour hand */
 .minute {
-    width: 35vh; /* Fixed length based on viewport height */
+    width: 35vh;
     height: 0.4vh;
 }
 
 /* Second hand: the longest, but should not exceed the clock radius */
 .second {
-    width: 38vh; /* Length based on viewport height to maintain proportionality */
-    height: 0.3vh; /* Thickness is thinner than the minute and hour hands */
+    width: 35vh;
+    height: 0.3vh;
     background-color: red;
-    box-shadow: 0px 0px 5px rgba(255, 0, 0, 0.7);
 }
 
 #ticks {
