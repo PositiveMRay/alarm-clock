@@ -62,12 +62,6 @@ function setAlarm() {
   // TODO: Make a dialog for this.
   let alarmTimeString = prompt("Enter alarm time (HH:MM):");
 
-  //const alarmInput = document.getElementById('alarmTime').value;
-  //if (!alarmInput) {
-  //  alert('Please select a valid time for the alarm.');
-  //  return;
-  //}
-
   const now = new Date();
   //const alarmDate = new Date(`${now.toDateString()} ${alarmInput}`);
   const alarmDate = new Date(`${now.toDateString()} ${alarmTimeString}`);
@@ -115,10 +109,11 @@ function snoozeAlarm() {
 }
 
 function stopAlarm() {
-    audio.pause();
-    audio.loop = false;
-    audio.currentTime = 0;
-    alarmTimeout = null;
+  audio.pause();
+  audio.loop = false;
+  audio.currentTime = 0;
+  alarmTime = null;
+  alarmTimeout = null;
 }
 
 function triggerAlarm() {
@@ -126,6 +121,7 @@ function triggerAlarm() {
   audio.play();
   sendNotification();
   // Reset the alarm
+  alarmTime = null;
   alarmTimeout = null;
 }
 
