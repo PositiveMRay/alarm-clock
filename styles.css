@@ -9,10 +9,10 @@ body {
 }
 
 .clock {
-    width: 100vw;
-    height: 100vh;
-    max-width: 100vh;
-    max-height: 100vh;
+    width: 100vmin;
+    height: 100vmin;
+    max-width: 100vmin;
+    max-height: 100vmin;
     border-radius: 50%;
     margin: auto;
     position: relative;
@@ -38,21 +38,21 @@ body {
 
 /* Hour hand: shorter */
 .hour {
-    width: 22vh; /* Fixed length based on viewport height */
-    height: 0.5vh; /* Thickness of the hand */
+    width: 30vmin; /* Fixed length based on min of viewport height and height */
+    height: 0.5vmin; /* Thickness of the hand */
     background-color: white;
 }
 
 /* Minute hand: longer than hour hand */
 .minute {
-    width: 35vh;
-    height: 0.4vh;
+    width: 40vmin;
+    height: 0.4vmin;
 }
 
 /* Second hand: the longest, but should not exceed the clock radius */
 .second {
-    width: 35vh;
-    height: 0.3vh;
+    width: 40vmin;
+    height: 0.3vmin;
     background-color: red;
 }
 
@@ -84,8 +84,8 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 2vh;  /* Make center point scalable */
-    height: 2vh;
+    width: 2vmin;  /* Make center point scalable */
+    height: 2vmin;
     background-color: red;
     border-radius: 50%;
     transform: translate(-50%, -50%);
