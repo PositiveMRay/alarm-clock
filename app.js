@@ -1,7 +1,7 @@
 let alarmTime = null;
 let alarmTimeout = null;
 let radius = null;
-let audio = new Audio('/time-in-a-bottle.mp3');
+let audio = new Audio('/beep-sound.mp3');
 let lastKeyUp = new Date(); // date and time of last keyUp
 const keyUpThreshold = 1000; // one thousand milliseconds
 let lastKeyTyped = null; // code of the last keyUp event
