@@ -80,6 +80,28 @@ function setAlarm() {
   alert(`Alarm set for ${alarmDate.toLocaleTimeString()}`);
 }
 
+function chooseAlarmSound() {
+  return new Promise((resolve, reject) => {
+    let alarmSoundSelection = document.createElement('input');
+    alarmSoundSelection.type = 'file';
+    alarmSoundSelection.accept = '.mp3';
+
+    alarmSoundSelection.addEventListener('change', function (event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        const alarmSound = files[0];
+        audioUrl = URL.createObjectURL(alarmSound);
+        console.log(`success! files = ${files}; alarmSound = ${alarmSound.name}`);
+        resolve(audioUrl);
+      } else {
+        reject(new Error('No file selected.'));
+      }
+    });
+
+    alarmSoundSelection.click();
+  });
+}
+
 function snoozeAlarm() {
   alert("Snooze feature under development.")
   return;
@@ -160,6 +182,7 @@ function toggleFullScreen() {
 function displayHelp() {
   const message = "single 'f' Key - toggle fullscreen mode\n" +
     "double 'a' - set alarm\n" +
+    "double 'c' - choose custom alarm sound\n" +
     "double 'n' - snooze (n is for 'nap') for x minutes (enter minutes followed by 'Enter' key)\n" +
     "double 's' - stop the alarm (same as double 'spacebar'\n" +
     "double 'spacebar' - stop alarm\n" +
@@ -176,7 +199,7 @@ function wrapUpTapEvent(clearTapsDetected) {
     tapsDetected += 1;
   }
 }
-function handleKeyUp(event) {
+async function handleKeyUp(event) {
   const currentTime = new Date();
   
   if (lastKeyUp === 0) {
@@ -214,9 +237,25 @@ function handleKeyUp(event) {
         case 'A':
           // user requests alarm set
           event.preventDefault();
-          //alert('Setting alarm is not yet implemented.')
           setAlarm();
           break;
+        // user requests to choose custom alarm sound.
+        case 'c':
+        case 'C':
+          event.preventDefault();
+          //audioSource = chooseAlarmSound();
+          //audio.setAttribute('src', audioSource);
+          chooseAlarmSound()
+          .then ((file) => {
+            //audio.setAttribute('src', file);
+            audio.src = file;
+            audio.currentTime = 0;
+          })
+          .catch((error) => {
+            console.log(error.message);
+          });
+          break;
+
         // user requests to stop the alarm.
         case ' ':
         case 's':
