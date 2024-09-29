@@ -6,7 +6,7 @@ const urlsToCache = [
   '/index.html',
   '/styles.css',
   '/icon.png',
-  '/time-in-a-bottle.mp3',
+  '/beep-sound.mp3',
   '/manifest.json'  // Ensure this file is locally hosted and accessible
 ];
 
