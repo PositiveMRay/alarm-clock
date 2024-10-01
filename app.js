@@ -1,4 +1,3 @@
-let alarmTime = null;
 let alarmTimeout = null;
 let radius = null;
 let audio = new Audio('/beep-sound.mp3');
@@ -134,7 +133,6 @@ function stopAlarm() {
   audio.pause();
   audio.loop = false;
   audio.currentTime = 0;
-  alarmTime = null;
   alarmTimeout = null;
 }
 
@@ -143,7 +141,6 @@ function triggerAlarm() {
   audio.play();
   sendNotification();
   // Reset the alarm
-  alarmTime = null;
   alarmTimeout = null;
 }
 
